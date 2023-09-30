@@ -1,0 +1,36 @@
+name: Release
+
+on: push
+
+jobs:
+  release:
+    permissions: write-all
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      # - uses: pnpm/action-setup@v2
+      #   with:
+      #     version: 8
+      # - run: pnpm i
+      - uses: mskelton/setup-yarn@v1
+        with:
+          node-version: "16.x"
+          flags: --immutable-cache
+      - name: Publish
+        run: yarn run publish
+        env: # Or as an environment variable
+          TOKEN: ${{ secrets.TOKEN }}
+
+      # - name: Release
+      #   uses: softprops/action-gh-release@v1
+      #   if: startsWith(github.ref, 'refs/tags/')
+      #   with:
+      #     files: out
